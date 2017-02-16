@@ -1,0 +1,122 @@
+(function () {
+	/**
+	 * Configuration starts here
+	 */
+	/**
+	 * The difference that must be between the two dates (at least n days)
+	 * @type {number}
+	 */
+	var dateDifference = 7;
+	
+	/**
+	 * Id of the first date field
+	 * @type {string}
+	 */
+	var date1ControlId = 'id123-control6032726';
+	
+	/**
+	 * Id of the second date field
+	 * @type {string}
+	 */
+	var date2ControlId = 'id123-control6032727';
+	
+	/**
+	 * The error message
+	 * @type {string}
+	 */
+	var dateControlError = 'The date difference must be at least ' + dateDifference + ' days.';
+	/**
+	 * Configuration ends here
+	 * Do not edit below this line
+	 */
+	
+	
+	var date1ControlObject = jQuery('#' + date1ControlId);
+	var date2ControlObject = jQuery('#' + date2ControlId);
+	
+	/**
+	 * Date 1 field change event
+	 */
+	jQuery(date1ControlObject).on('change', function () {
+		if (getDate(date2ControlObject) && !checkDates()) {
+			addError(date1ControlObject);
+		}
+	});
+	
+	/**
+	 * Date 2 field change event
+	 */
+	jQuery(date2ControlObject).on('change', function () {
+		if (getDate(date1ControlObject) && !checkDates()) {
+			addError(date2ControlObject);
+		}
+	});
+	
+	/**
+	 * Form submit event
+	 * Prevents form submission if the validation fails
+	 */
+	jQuery('form').submit(function(e){
+		if((getDate(date1ControlObject) || getDate(date2ControlObject)) && !checkDates()){
+			e.preventDefault();
+			e.stopPropagation();
+			setTimeout(function(){
+				jQuery('#id123-button-send').show();
+				jQuery('.after-click-btn--disable').remove();
+			}, 100);
+			return false;
+		}
+		
+		return true;
+	});
+	
+	/**
+	 * Checks the difference between two dates
+	 * @returns {boolean}
+	 */
+	function checkDates() {
+		var date1 = new Date(getDate(date1ControlObject));
+		var date2 = new Date(getDate(date2ControlObject));
+		
+		return getFutureDate(date1, dateDifference) <= date2;
+	}
+	
+	/**
+	 * Adds a number of days to a date object
+	 * @param dateObject
+	 * @param days
+	 * @returns {Date}
+	 */
+	function getFutureDate(dateObject, days) {
+		return new Date(dateObject.getTime() + days * 24 * 60 * 60 * 1000);
+	}
+	
+	/**
+	 * Gets the date from the form field
+	 * @param object
+	 */
+	function getDate(object) {
+		var value = jQuery(object).val();
+		
+		/**
+		 * Force mm/dd/yyyy format
+		 */
+		if(value.trim() && jQuery(object).data('date-format') == 'dd/mm/yyyy'){
+			var dateParts = value.split('/');
+			value = dateParts[1] + '/' + dateParts[0] + '/' + dateParts[2];
+		}
+		
+		return value;
+	}
+	
+	/**
+	 * Adds an error to a form field
+	 * @param object
+	 */
+	function addError(object) {
+		setTimeout(function () {
+			jQuery(object).parents('.fieldcontainer').last().removeClass('focus').addClass('validation-error');
+			jQuery(object).parents('.control-row').first().next().append('<div class="col-lg-12 col-md-12 col-sm-12 fielderror">' + dateControlError + '</div>');
+		}, 100);
+	}
+})();
