@@ -1,10 +1,20 @@
 $(document).ready(function () {
 	(function (jQuery) {
 		
+		var config = {
+			"backgroundColor": "#eee"
+		};
+		
 		var fieldIds = {
 			"otherFields": [
 				//Dropdown
-				"id123-control6673638"
+				"id123-control6673638",
+				
+				//Single Choice - Only one option is needed
+				"id123-control6673639_0",
+				
+				//Multiple Choice - Only one option is needed
+				"id123-control6673640_0"
 			],
 			
 			
@@ -45,26 +55,95 @@ $(document).ready(function () {
 					
 					var fieldElement = jQuery('#' + fieldId);
 					
-					if (fieldElement.val().trim() !== '') {
-						fieldElement.attr('readonly', 'readonly')
-						.css('background-color', '#eee');
-						
-						if (getElementType(fieldElement) === 'SELECT') {
-							makeSelectReadOnly(fieldElement);
-						}
+					if (elementHasValue(fieldElement)) {
+						makeElementReadOnly(fieldElement);
 					}
 				});
 				
 			});
 		}
 		
-		function getElementType(fieldElement) {
-			return jQuery(fieldElement)[0].tagName;
+		/**
+		 * @param fieldElement
+		 * @returns {boolean}
+		 */
+		function elementHasValue(fieldElement) {
+			var elementType = getElementType(fieldElement);
+			
+			switch (elementType) {
+				case 'INPUT-RADIO':
+				case 'INPUT-CHECKBOX':
+					var selected  = false;
+					var elementId = fieldElement.attr('id').split('_')[0];
+					$('input[id*="' + elementId + '"]').each(function (index, element) {
+						if (jQuery(element).is(':checked'))
+							selected = true;
+					});
+					return selected;
+					break;
+				
+				case 'INPUT':
+				case 'SELECT':
+					return fieldElement.val().trim() !== '';
+					break;
+				
+				default:
+					return false;
+			}
 		}
 		
-		function makeSelectReadOnly(fieldElement) {
-			jQuery('#s2id_' + fieldElement.attr('id') + ' .select2-choice').css('background-color', '#eee');
-			jQuery(fieldElement).find("option:not(:selected)").prop("disabled", true);
+		/**
+		 * @param fieldElement
+		 */
+		function makeElementReadOnly(fieldElement) {
+			var elementType = getElementType(fieldElement);
+			
+			switch (elementType) {
+				case 'SELECT':
+					jQuery('#s2id_' + fieldElement.attr('id') + ' .select2-choice').css('background-color', getConfigOption('backgroundColor'));
+					jQuery(fieldElement).find("option:not(:selected)").prop("disabled", true);
+					break;
+				
+				case 'INPUT-RADIO':
+				case 'INPUT-CHECKBOX':
+					var elementId = fieldElement.attr('id').split('_')[0];
+					$('label[for*="' + elementId + '"]').each(function (index, element) {
+						jQuery(element).attr('for', '').attr('for', '');
+						jQuery(element).find('span.outside').css('background-color', getConfigOption('backgroundColor'));
+					});
+					break;
+				
+				case 'INPUT':
+				default:
+					fieldElement.attr('readonly', 'readonly').css('background-color', getConfigOption('backgroundColor'));
+					break;
+			}
+			
+		}
+		
+		/**
+		 * @param fieldElement
+		 * @returns {string}
+		 */
+		function getElementType(fieldElement) {
+			var elementType    = jQuery(fieldElement)[0].tagName;
+			var elementSubType = fieldElement.attr('type') || '';
+			
+			return elementSubType
+				? elementType + '-' + elementSubType.toUpperCase()
+				: elementType;
+		}
+		
+		/**
+		 * @param option
+		 * @returns {*}
+		 */
+		function getConfigOption(option) {
+			if (option && config.hasOwnProperty(option)) {
+				return config[option];
+			}
+			
+			return '';
 		}
 	})($);
 });
