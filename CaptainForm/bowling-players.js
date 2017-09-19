@@ -1,7 +1,13 @@
-$(document).ready(function(){
-	(function(jQuery){
+$(document).ready(function () {
+	(function (jQuery) {
 		
 		var fieldIds = {
+			"otherFields": [
+				//Dropdown
+				"id123-control6673638"
+			],
+			
+			
 			"player1": [
 				'id123-control6640945-1',
 				'id123-control6640945-2',
@@ -32,21 +38,33 @@ $(document).ready(function(){
 		
 		var entryId = jQuery('input[name=entryid]');
 		
-		if(~~entryId.val() > 0){
-			jQuery.each(fieldIds, function(playerId, playerFields){
+		if (~~entryId.val() > 0) {
+			jQuery.each(fieldIds, function (playerId, playerFields) {
 				
-				jQuery(playerFields).each(function(index, fieldId){
+				jQuery(playerFields).each(function (index, fieldId) {
 					
 					var fieldElement = jQuery('#' + fieldId);
 					
-					if(fieldElement.val().trim() !== '')
+					if (fieldElement.val().trim() !== '') {
 						fieldElement.attr('readonly', 'readonly')
 						.css('background-color', '#eee');
-					
+						
+						if (getElementType(fieldElement) === 'SELECT') {
+							makeSelectReadOnly(fieldElement);
+						}
+					}
 				});
 				
 			});
 		}
 		
+		function getElementType(fieldElement) {
+			return jQuery(fieldElement)[0].tagName;
+		}
+		
+		function makeSelectReadOnly(fieldElement) {
+			jQuery('#s2id_' + fieldElement.attr('id') + ' .select2-choice').css('background-color', '#eee');
+			jQuery(fieldElement).find("option:not(:selected)").prop("disabled", true);
+		}
 	})($);
 });
