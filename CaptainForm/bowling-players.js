@@ -82,8 +82,6 @@ $(document).ready(function () {
 					return selected;
 					break;
 				
-				case 'INPUT':
-				case 'SELECT':
 				default:
 					return fieldElement.val().trim() !== '';
 					break;
@@ -114,7 +112,6 @@ $(document).ready(function () {
 					});
 					break;
 				
-				case 'INPUT':
 				default:
 					fieldElement.attr('readonly', 'readonly').css('background-color', getConfigOption('backgroundColor'));
 					break;
