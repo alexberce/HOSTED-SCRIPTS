@@ -84,11 +84,9 @@ $(document).ready(function () {
 				
 				case 'INPUT':
 				case 'SELECT':
+				default:
 					return fieldElement.val().trim() !== '';
 					break;
-				
-				default:
-					return false;
 			}
 		}
 		
