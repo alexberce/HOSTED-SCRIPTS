@@ -98,8 +98,11 @@ $(document).ready(function () {
 			
 			switch (elementType) {
 				case 'SELECT':
-					jQuery('#s2id_' + fieldElement.attr('id') + ' .select2-choice').css('background-color', getConfigOption('backgroundColor'));
-					jQuery(fieldElement).find("option:not(:selected)").prop("disabled", true);
+					setTimeout(function(){
+						jQuery('#s2id_' + fieldElement.attr('id') + ' .select2-choice').css('background-color', getConfigOption('backgroundColor'));
+						jQuery(fieldElement).find("option:not(:selected)").prop("disabled", true);
+					}, 200);
+					
 					break;
 				
 				case 'INPUT-RADIO':
